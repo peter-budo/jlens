@@ -1,0 +1,5 @@
+Must have Java JDK 7!
+
+This small application is to help photographers to do some simple statistics (charts) on image metadata.
+Based on metadata user should be able to find/see the usage of lenses length, ISO, shutter speed, camera type etc.
+Also user should be able to filter on processed data such as camera used, image type etc.
