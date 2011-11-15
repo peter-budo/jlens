@@ -1,17 +1,28 @@
 package jlens;
 
+import jlens.gui.JLensFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.UIManager;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.UserDefinedFileAttributeView;
-import java.util.List;
 
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Peter Miklosko
+ */
 public class JLens {
+    private static final Logger LOG = LoggerFactory.getLogger(JLens.class);
 
     public static void main(String[] args) {
-        File image = new File("IMG_2075.CR2");
+        //TODO replace with image of logo
+        File image = new File("C:\\github\\jlens\\src\\main\\resources\\500d.jpg");
         Path file = image.toPath();
         FileStore store = null;
         try {
@@ -20,18 +31,26 @@ public class JLens {
             e.printStackTrace();
         }
         if (!store.supportsFileAttributeView(UserDefinedFileAttributeView.class)) {
-            System.err.format("UserDefinedFileAttributeView not supported on %s\n", store);
+            LOG.error("UserDefinedFileAttributeView not supported on %s\n", store);
             System.exit(-1);
 
+        } else {
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    createAndShowGUI();
+                }
+            });
         }
-        UserDefinedFileAttributeView view = Files.getFileAttributeView(file, UserDefinedFileAttributeView.class);
-        try{
-            List<String> list = view.list();
-            for(String listElement : list){
-                System.out.println(listElement);
-            }
-        } catch (IOException e){
-            e.printStackTrace();
+    }
+
+    private static void createAndShowGUI() {
+        try {
+            UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            LOG.info("Couldn't use system look and feel.");
         }
+
+        new JLensFrame("JLens");
     }
 }
