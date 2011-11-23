@@ -5,9 +5,12 @@
     <artifactId>jlens</artifactId>
     <version>0.1-SNAPSHOT</version>
     <name>JLens</name>
-    <description>This small application is to help photographers to do some simple statistics (charts) on image metadata.
-    Based on metadata user should be able to find/see the usage of lenses length, ISO, shutter speed, camera type etc.
-    Also user should be able to filter on processed data such as camera used, image type etc.</description>
+    <description>This small application is to help photographers to do some simple statistics (charts) on image
+        metadata.
+        Based on metadata user should be able to find/see the usage of lenses length, ISO, shutter speed, camera type
+        etc.
+        Also user should be able to filter on processed data such as camera used, image type etc.
+    </description>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -51,6 +54,13 @@
             <artifactId>mockito-all</artifactId>
             <version>1.8.5</version>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Unit-testing Java library for Swing-based Java applications-->
+        <dependency>
+            <groupId>org.uispec4j</groupId>
+            <artifactId>uispec4j</artifactId>
+            <version>2.4</version>
         </dependency>
     </dependencies>
 

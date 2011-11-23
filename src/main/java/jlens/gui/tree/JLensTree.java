@@ -4,7 +4,9 @@ import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.io.File;
 
 import static java.io.File.listRoots;
@@ -17,41 +19,69 @@ import static java.io.File.listRoots;
  */
 public class JLensTree extends JTree {
 
-    public static JTree tree() {
+    private DefaultTreeModel treeModel;
+
+    public JLensTree() {
+        treeModel = defaultTreeModel();
+        setModel(treeModel);
+
+        addTreeExpansionListener(new DirExpansionListener());
+        getSelectionModel().setSelectionMode(
+                TreeSelectionModel.SINGLE_TREE_SELECTION);
+        setShowsRootHandles(true);
+        setEditable(false);
+    }
+
+    private DefaultTreeModel defaultTreeModel() {
         DefaultMutableTreeNode top = new DefaultMutableTreeNode("Computer");
 
         DefaultMutableTreeNode node;
         File[] roots = listRoots();
         for (File root : roots) {
-            node = new DefaultMutableTreeNode(root, true);
+            node = new DefaultMutableTreeNode(new FileNode(root));
             top.add(node);
-            addNodes(node);
+            node.add(new DefaultMutableTreeNode(new Boolean(true)));
         }
-        final JTree tree = new JTree(top);
-        tree.addTreeExpansionListener(new TreeExpansionListener() {
-            public void treeExpanded(TreeExpansionEvent event) {
-                TreePath treePath = event.getPath();
-                DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
-                if (selectedNode.isLeaf()) {
-                    addNodes(selectedNode);
-                }
-            }
-
-            public void treeCollapsed(TreeExpansionEvent event) {
-            }
-        });
-        return tree;
+        return new DefaultTreeModel(top);
     }
 
-    private static void addNodes(DefaultMutableTreeNode selectedNode) {
-        File file = new File(selectedNode.toString());
-        if (file.isDirectory()) {
-            File[] subFiles = file.listFiles();
-            for (File subFile : subFiles) {
-                if (subFile.isDirectory()) {
-                    selectedNode.add(new DefaultMutableTreeNode(subFile.getName(), true));
+    DefaultMutableTreeNode getTreeNode(TreePath path) {
+        return (DefaultMutableTreeNode) (path.getLastPathComponent());
+    }
+
+    FileNode getFileNode(DefaultMutableTreeNode node) {
+        if (node == null)
+            return null;
+        Object obj = node.getUserObject();
+        /*if (obj instanceof IconData)
+            obj = ((IconData) obj).getObject();*/
+        if (obj instanceof FileNode)
+            return (FileNode) obj;
+        else
+            return null;
+    }
+
+    class DirExpansionListener implements TreeExpansionListener {
+        public void treeExpanded(TreeExpansionEvent event) {
+            final DefaultMutableTreeNode node = getTreeNode(event.getPath());
+            final FileNode fileNode = getFileNode(node);
+
+            Thread runner = new Thread() {
+                public void run() {
+                    if (fileNode != null && fileNode.expand(node)) {
+                        Runnable runnable = new Runnable() {
+                            public void run() {
+                                treeModel.reload(node);
+                            }
+                        };
+                        SwingUtilities.invokeLater(runnable);
+                    }
                 }
-            }
+            };
+            runner.start();
+        }
+
+        public void treeCollapsed(TreeExpansionEvent event) {
         }
     }
 }

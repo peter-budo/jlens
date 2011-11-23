@@ -1,14 +1,9 @@
 package jlens.gui;
 
-import javax.swing.*;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import java.awt.*;
-import java.io.File;
+import jlens.gui.tree.JLensTree;
 
-import static java.io.File.listRoots;
-import static jlens.gui.tree.JLensTree.tree;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,7 +22,7 @@ public class FilesTree extends JPanel {
     public FilesTree() {
         setLayout(new GridLayout(1, 0));
 
-        JScrollPane treeView = new JScrollPane(tree());
+        JScrollPane treeView = new JScrollPane(new JLensTree());
         this.add(treeView);
     }
 }
